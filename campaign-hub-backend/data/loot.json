@@ -1,0 +1,37 @@
+[
+  {
+    "id": "1",
+    "name": "Mithril Jacket",
+    "type": "armor",
+    "rarity": "legendary",
+    "quantity": 1,
+    "description": "Light as a feather, and as hard as dragon-scales."
+  },
+  {
+    "id": "2",
+    "name": "Sting",
+    "type": "weapon",
+    "rarity": "rare",
+    "quantity": 1,
+    "description": "An ancient Elven blade that glows blue when Orcs are near.",
+    "assignedTo": "Peregrin Took"
+  },
+  {
+    "id": "3",
+    "name": "Lembas Bread",
+    "type": "misc",
+    "rarity": "uncommon",
+    "quantity": 12,
+    "description": "One small bite is enough to fill the stomach of a grown man."
+  },
+  {
+    "name": "Tylers hat",
+    "type": "armor",
+    "rarity": "legendary",
+    "quantity": 1,
+    "description": "This hat increases power level to OVER 9000!!!!!",
+    "value": 9001,
+    "id": "1772127026324",
+    "assignedTo": "Peregrin Took"
+  }
+]

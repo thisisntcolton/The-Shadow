@@ -1,0 +1,18 @@
+[
+  {
+    "id": "1",
+    "title": "Departure from Bag End",
+    "date": "September 22, 1418",
+    "location": "The Shire",
+    "content": "The road goes ever on and on, down from the door where it began. We've left the comforts of the hearth for the shadows of the wild.",
+    "author": "Frodo"
+  },
+  {
+    "id": "2",
+    "title": "A Shortcut to Mushrooms With Tyler",
+    "date": "September 25, 1418",
+    "location": "Bamfurlong",
+    "content": "Farmer Maggot's dogs are fiercer than the Black Riders, but his hospitality is unmatched. We have replenished our stores.",
+    "author": "Peregrin Took"
+  }
+]

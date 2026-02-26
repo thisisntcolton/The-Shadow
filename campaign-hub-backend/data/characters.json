@@ -1,0 +1,86 @@
+[
+  {
+    "id": "1",
+    "name": "Mithrandir",
+    "race": "Maiar",
+    "class": "Wizard",
+    "level": 15,
+    "image": "gandalf-wizard.jpg",
+    "hitPoints": { "current": 78, "max": 95 },
+    "armorClass": 15,
+    "stats": {
+      "strength": 10,
+      "dexterity": 14,
+      "constitution": 16,
+      "intelligence": 20,
+      "wisdom": 18,
+      "charisma": 16
+    },
+    "equipment": ["Staff of Power", "Grey Robes", "Glamdring", "Narya (Ring of Fire)"],
+    "traits": ["Spellcasting", "Arcane Recovery", "Istari Wisdom", "Fire Magic"],
+    "assignedTo": "Mithrandir"
+  },
+  {
+    "id": "2",
+    "name": "Peregrin Took",
+    "race": "Hobbit",
+    "class": "Rogue",
+    "level": 8,
+    "image": "hobbit-adventurer.jpg",
+    "hitPoints": { "current": 52, "max": 52 },
+    "armorClass": 14,
+    "stats": {
+      "strength": 8,
+      "dexterity": 18,
+      "constitution": 14,
+      "intelligence": 12,
+      "wisdom": 10,
+      "charisma": 14
+    },
+    "equipment": ["Barrow-blade", "Elven Cloak", "Mithril Vest", "Lembas Bread"],
+    "traits": ["Sneak Attack", "Halfling Luck", "Brave", "Nimble"],
+    "assignedTo": "Patrick"
+  },
+  {
+    "id": "3",
+    "name": "Celebrindal",
+    "race": "Elf",
+    "class": "Fighter",
+    "level": 10,
+    "image": "elf-warrior.jpg",
+    "hitPoints": { "current": 84, "max": 84 },
+    "armorClass": 18,
+    "stats": {
+      "strength": 16,
+      "dexterity": 18,
+      "constitution": 14,
+      "intelligence": 14,
+      "wisdom": 12,
+      "charisma": 12
+    },
+    "equipment": ["Longbow of Lothlórien", "Twin Elven Blades", "Mithril Armor", "Cloak of Elvenkind"],
+    "traits": ["Fighting Style", "Action Surge", "Fey Ancestry", "Trance"],
+    "assignedTo": "Matthew"
+  },
+  {
+    "id": "4",
+    "name": "Thorin Stonehelm",
+    "race": "Dwarf",
+    "class": "Barbarian",
+    "level": 9,
+    "image": "dwarf-warrior.jpg",
+    "hitPoints": { "current": 102, "max": 115 },
+    "armorClass": 16,
+    "stats": {
+      "strength": 18,
+      "dexterity": 12,
+      "constitution": 18,
+      "intelligence": 10,
+      "wisdom": 12,
+      "charisma": 8
+    },
+    "equipment": ["Dwarven Waraxe", "Shield of Erebor", "Chainmail", "Horn of Durin"],
+    "traits": ["Rage", "Reckless Attack", "Dwarven Resilience", "Stonecunning"],
+    "assignedTo": "Heath"
+  }
+]
