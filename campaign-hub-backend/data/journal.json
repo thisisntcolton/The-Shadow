@@ -14,5 +14,21 @@
     "location": "Bamfurlong",
     "content": "Farmer Maggot's dogs are fiercer than the Black Riders, but his hospitality is unmatched. We have replenished our stores.",
     "author": "Peregrin Took"
+  },
+  {
+    "title": "Session Zero",
+    "date": "Feb 26th 2026",
+    "location": "Heaths Hobbit Hole ",
+    "content": "Today was the start of a GRAND ADVENTURE. Well -- it was the start to something amazing I guess. ",
+    "author": "Tyler",
+    "id": "1772150315291"
+  },
+  {
+    "title": "Test",
+    "date": "Test",
+    "location": "Test",
+    "content": "Test",
+    "author": "Colton",
+    "id": "1772151140622"
   }
 ]
