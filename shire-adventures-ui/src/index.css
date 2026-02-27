@@ -1,0 +1,206 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Middle-earth inspired palette */
+    --background: 30 15% 8%;
+    --foreground: 40 30% 90%;
+
+    --card: 30 20% 12%;
+    --card-foreground: 40 30% 90%;
+
+    --popover: 30 20% 10%;
+    --popover-foreground: 40 30% 90%;
+
+    --primary: 43 70% 55%;
+    --primary-foreground: 30 15% 8%;
+
+    --secondary: 150 25% 20%;
+    --secondary-foreground: 40 30% 90%;
+
+    --muted: 30 15% 18%;
+    --muted-foreground: 40 15% 55%;
+
+    --accent: 150 30% 25%;
+    --accent-foreground: 40 30% 90%;
+
+    --destructive: 0 65% 45%;
+    --destructive-foreground: 40 30% 90%;
+
+    --border: 40 20% 25%;
+    --input: 40 20% 20%;
+    --ring: 43 70% 55%;
+
+    --radius: 0.5rem;
+
+    /* Custom Middle-earth tokens */
+    --parchment: 40 35% 88%;
+    --parchment-dark: 35 25% 75%;
+    --gold: 43 70% 55%;
+    --gold-light: 45 80% 70%;
+    --gold-dark: 40 60% 40%;
+    --forest: 150 30% 22%;
+    --forest-light: 150 25% 35%;
+    --forest-dark: 150 35% 12%;
+    --leather: 25 35% 18%;
+    --leather-light: 25 30% 28%;
+    --ember: 15 80% 50%;
+    --ember-glow: 25 90% 60%;
+
+    /* Gradients */
+    --gradient-gold: linear-gradient(135deg, hsl(43 70% 55%), hsl(45 80% 70%), hsl(43 70% 55%));
+    --gradient-parchment: linear-gradient(180deg, hsl(40 35% 88%), hsl(35 25% 75%));
+    --gradient-forest: linear-gradient(180deg, hsl(150 30% 22%), hsl(150 35% 12%));
+    --gradient-leather: radial-gradient(ellipse at top, hsl(25 35% 18%), hsl(30 15% 8%));
+
+    /* Shadows */
+    --shadow-gold: 0 0 20px hsl(43 70% 55% / 0.3);
+    --shadow-ember: 0 0 30px hsl(15 80% 50% / 0.2);
+    --shadow-deep: 0 10px 40px hsl(0 0% 0% / 0.5);
+
+    --sidebar-background: 30 20% 10%;
+    --sidebar-foreground: 40 30% 90%;
+    --sidebar-primary: 43 70% 55%;
+    --sidebar-primary-foreground: 30 15% 8%;
+    --sidebar-accent: 150 30% 25%;
+    --sidebar-accent-foreground: 40 30% 90%;
+    --sidebar-border: 40 20% 20%;
+    --sidebar-ring: 43 70% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+    background-image: var(--gradient-leather);
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+  .parchment-bg {
+    background: linear-gradient(180deg, hsl(40 35% 88%), hsl(35 25% 75%));
+    color: hsl(30 30% 15%);
+  }
+
+  .gold-text {
+    background: var(--gradient-gold);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gold-border {
+    border: 2px solid hsl(var(--gold));
+    box-shadow: var(--shadow-gold);
+  }
+
+  .ornate-border {
+    position: relative;
+    border: 1px solid hsl(var(--gold) / 0.4);
+  }
+
+  .ornate-border::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 1px solid hsl(var(--gold) / 0.2);
+    pointer-events: none;
+  }
+
+  .ember-glow {
+    box-shadow: var(--shadow-ember);
+  }
+
+  .tavern-card {
+    background: linear-gradient(145deg, hsl(25 35% 18%), hsl(30 15% 12%));
+    border: 1px solid hsl(var(--gold) / 0.3);
+  }
+
+  .scroll-card {
+    background: linear-gradient(180deg, hsl(40 30% 85%), hsl(35 20% 78%));
+    color: hsl(30 30% 15%);
+    position: relative;
+  }
+
+  .scroll-card::before,
+  .scroll-card::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: linear-gradient(90deg, 
+      hsl(30 25% 45%) 0%, 
+      hsl(35 30% 55%) 10%, 
+      hsl(35 30% 55%) 90%, 
+      hsl(30 25% 45%) 100%
+    );
+  }
+
+  .scroll-card::before {
+    top: 0;
+    border-radius: 4px 4px 0 0;
+  }
+
+  .scroll-card::after {
+    bottom: 0;
+    border-radius: 0 0 4px 4px;
+  }
+}
+
+@layer utilities {
+  .animate-glow {
+    animation: glow 3s ease-in-out infinite;
+  }
+
+  .animate-flicker {
+    animation: flicker 4s ease-in-out infinite;
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes glow {
+    0%, 100% {
+      filter: brightness(1);
+    }
+    50% {
+      filter: brightness(1.2);
+    }
+  }
+
+  @keyframes flicker {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.85;
+    }
+    75% {
+      opacity: 0.95;
+    }
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+}
