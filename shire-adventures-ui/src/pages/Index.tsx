@@ -7,6 +7,7 @@ import { PlayerJournal } from "@/components/PlayerJournal";
 import { DMRecap } from "@/components/DMRecap";
 import { BagOfLoot, LootItem } from "@/components/BagOfLoot";
 import { BookOpen, Scroll, Package, Sparkles } from "lucide-react";
+import { SessionCountdown } from "@/components/SessionCountdown";
 
 import wizardImage from "@/assets/characters/gandalf-wizard.jpg";
 import hobbitImage from "@/assets/characters/hobbit-adventurer.jpg";
@@ -29,17 +30,19 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [journalEntries, setJournalEntries] = useState<any[]>([]);
   const [sessionRecaps, setSessionRecaps] = useState<any[]>([]);
+  const [nextSession, setNextSession] = useState<string>("");
 
   useEffect(() => {
     const fetchCampaignData = async () => {
       try {
         setIsLoading(true);
-        const [lootRes, journalRes, recapRes, userRes, characterRes] = await Promise.all([
+        const [lootRes, journalRes, recapRes, userRes, characterRes, sessionRes] = await Promise.all([
           fetch("http://localhost:3000/api/loot"),
           fetch("http://localhost:3000/api/journal"),
           fetch("http://localhost:3000/api/recap"),
           fetch("http://localhost:3000/api/users"),
           fetch("http://localhost:3000/api/characters"),
+          fetch("http://localhost:3000/api/session"),
         ]);
 
         if (lootRes.ok) setLootItems(await lootRes.json());
@@ -47,6 +50,10 @@ const Index = () => {
         if (recapRes.ok) setSessionRecaps(await recapRes.json());
         if (userRes.ok) setAllUsers(await userRes.json());
         if (characterRes.ok) setCharacters(await characterRes.json());
+        if (sessionRes.ok) {
+          const sessionData = await sessionRes.json();
+          setNextSession(sessionData.nextSession);
+        }
       } catch (error) {
         console.error("Failed to sync with the backend:", error);
       } finally {
@@ -143,6 +150,17 @@ const handleDeleteJournalEntry = async (id: string) => {
     setJournalEntries(prev => prev.filter((entry: any) => entry.id !== id));
   }
 };
+
+  const handleUpdateSession = async (newDateTime: string) => {
+  const res = await fetch("http://localhost:3000/api/session", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ nextSession: newDateTime })
+  });
+
+  if (res.ok) setNextSession(newDateTime);
+};
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#1a1614] flex items-center justify-center text-[#d4af37]">
@@ -173,6 +191,14 @@ const handleDeleteJournalEntry = async (id: string) => {
           A Chronicle of the Fellowship's Journey
         </p>
       </motion.header>
+
+      {nextSession && (
+        <SessionCountdown
+        nextSession={nextSession}
+        isDM={currentUser?.role === 'DM'}
+        onUpdateSession={handleUpdateSession}
+      />
+    )}
 
       {/* User Selection */}
       <div className="flex flex-col items-center justify-center mb-12 p-6 border-b border-gold/10 bg-muted/5">

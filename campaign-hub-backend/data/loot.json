@@ -33,5 +33,14 @@
     "value": 9001,
     "id": "1772127026324",
     "assignedTo": "Peregrin Took"
+  },
+  {
+    "name": "big boots",
+    "type": "armor",
+    "rarity": "legendary",
+    "quantity": 10000,
+    "description": "These boots are sticky",
+    "id": "1772155838263",
+    "assignedTo": "Peregrin Took"
   }
 ]
