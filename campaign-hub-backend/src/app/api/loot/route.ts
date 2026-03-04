@@ -1,18 +1,9 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
+import { getCorsHeaders } from '@/lib/cors';
 
 const filePath = path.join(process.cwd(), 'data', 'loot.json');
-
-function getCorsHeaders(request: Request) {
-  const origin = request.headers.get('origin') || '';
-  const allowed = ['http://localhost:8080', 'http://10.30.0.112:8080'];
-  return {
-    'Access-Control-Allow-Origin': allowed.includes(origin) ? origin : allowed[0],
-    'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-  };
-}
 
 export async function OPTIONS(request: Request) {
   return new NextResponse(null, { status: 204, headers: getCorsHeaders(request) });
@@ -63,7 +54,6 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: "Failed to assign item" }, { status: 500, headers: getCorsHeaders(request) });
   }
 }
-
 
 export async function DELETE(request: Request) {
   try {
