@@ -37,12 +37,12 @@ const Index = () => {
       try {
         setIsLoading(true);
         const [lootRes, journalRes, recapRes, userRes, characterRes, sessionRes] = await Promise.all([
-          fetch("http://localhost:3000/api/loot"),
-          fetch("http://localhost:3000/api/journal"),
-          fetch("http://localhost:3000/api/recap"),
-          fetch("http://localhost:3000/api/users"),
-          fetch("http://localhost:3000/api/characters"),
-          fetch("http://localhost:3000/api/session"),
+          fetch("https://the-shadow-backend.vercel.app/api/loot"),
+          fetch("https://the-shadow-backend.vercel.app/api/journal"),
+          fetch("https://the-shadow-backend.vercel.app/api/recap"),
+          fetch("https://the-shadow-backend.vercel.app/api/users"),
+          fetch("https://the-shadow-backend.vercel.app/api/characters"),
+          fetch("https://the-shadow-backend.vercel.app/api/session"),
         ]);
 
         if (lootRes.ok) setLootItems(await lootRes.json());
@@ -74,34 +74,34 @@ const Index = () => {
       session: sessionRecaps.length + 1
     };
 
-    const res = await fetch("http://localhost:3000/api/recap", {
+    const res = await fetch("https://the-shadow-backend.vercel.app/api/recap", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     });
 
     if (res.ok) {
-      const updated = await fetch("http://localhost:3000/api/recap").then(r => r.json());
+      const updated = await fetch("https://the-shadow-backend.vercel.app/api/recap").then(r => r.json());
       setSessionRecaps(updated);
       e.currentTarget.reset();
     }
   };
 
   const handleAddLoot = async (newItem: Omit<LootItem, 'id'>) => {
-    const res = await fetch("http://localhost:3000/api/loot", {
+    const res = await fetch("https://the-shadow-backend.vercel.app/api/loot", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newItem)
     });
 
     if (res.ok) {
-      const updated = await fetch("http://localhost:3000/api/loot").then(r => r.json());
+      const updated = await fetch("https://the-shadow-backend.vercel.app/api/loot").then(r => r.json());
       setLootItems(updated);
     }
   };
 
   const handleRemoveLoot = async (id: string) => {
-    const res = await fetch("http://localhost:3000/api/loot", {
+    const res = await fetch("https://the-shadow-backend.vercel.app/api/loot", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id })
@@ -113,7 +113,7 @@ const Index = () => {
   };
 
   const handleAssignLoot = async (id: string, assignedTo: string) => {
-    const res = await fetch("http://localhost:3000/api/loot", {
+    const res = await fetch("https://the-shadow-backend.vercel.app/api/loot", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id, assignedTo })
@@ -127,20 +127,20 @@ const Index = () => {
   };
 
   const handleAddJournalEntry = async (newEntry: Omit<{ id: string; title: string; date: string; location: string; content: string; author: string; }, 'id'>) => {
-  const res = await fetch("http://localhost:3000/api/journal", {
+  const res = await fetch("https://the-shadow-backend.vercel.app/api/journal", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(newEntry)
   });
 
   if (res.ok) {
-    const updated = await fetch("http://localhost:3000/api/journal").then(r => r.json());
+    const updated = await fetch("https://the-shadow-backend.vercel.app/api/journal").then(r => r.json());
     setJournalEntries(updated);
   }
 };
 
 const handleDeleteJournalEntry = async (id: string) => {
-  const res = await fetch("http://localhost:3000/api/journal", {
+  const res = await fetch("https://the-shadow-backend.vercel.app/api/journal", {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ id })
@@ -152,7 +152,7 @@ const handleDeleteJournalEntry = async (id: string) => {
 };
 
   const handleUpdateSession = async (newDateTime: string) => {
-  const res = await fetch("http://localhost:3000/api/session", {
+  const res = await fetch("https://the-shadow-backend.vercel.app/api/session", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ nextSession: newDateTime })
