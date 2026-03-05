@@ -8,6 +8,8 @@ import { DMRecap } from "@/components/DMRecap";
 import { BagOfLoot, LootItem } from "@/components/BagOfLoot";
 import { BookOpen, Scroll, Package, Sparkles } from "lucide-react";
 import { SessionCountdown } from "@/components/SessionCountdown";
+import { MapView } from "@/components/MapView";
+import { Map } from "lucide-react";
 
 import wizardImage from "@/assets/characters/gandalf-wizard.jpg";
 import hobbitImage from "@/assets/characters/hobbit-adventurer.jpg";
@@ -31,6 +33,7 @@ const Index = () => {
   const [journalEntries, setJournalEntries] = useState<any[]>([]);
   const [sessionRecaps, setSessionRecaps] = useState<any[]>([]);
   const [nextSession, setNextSession] = useState<string>("");
+  const [pins, setPins] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchCampaignData = async () => {
@@ -43,6 +46,7 @@ const Index = () => {
           fetch("https://the-shadow-backend.vercel.app/api/users"),
           fetch("https://the-shadow-backend.vercel.app/api/characters"),
           fetch("https://the-shadow-backend.vercel.app/api/session"),
+          fetch("https://the-shadow-backend.vercel.app/api/pins"),
         ]);
 
         if (lootRes.ok) setLootItems(await lootRes.json());
@@ -152,15 +156,34 @@ const handleDeleteJournalEntry = async (id: string) => {
 };
 
   const handleUpdateSession = async (newDateTime: string) => {
-  const res = await fetch("https://the-shadow-backend.vercel.app/api/session", {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ nextSession: newDateTime })
-  });
+    const res = await fetch("https://the-shadow-backend.vercel.app/api/session", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nextSession: newDateTime })
+    });
+    if (res.ok) setNextSession(newDateTime);
+  };
 
-  if (res.ok) setNextSession(newDateTime);
-};
+  const handleAddPin = async (newPin: any) => {
+    const res = await fetch("https://the-shadow-backend.vercel.app/api/pins", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newPin)
+    });
+    if (res.ok) {
+      const updated = await fetch("https://the-shadow-backend.vercel.app/api/pins").then(r => r.json());
+      setPins(updated);
+    }
+  };
 
+  const handleDeletePin = async (id: string) => {
+    const res = await fetch("https://the-shadow-backend.vercel.app/api/pins", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id })
+    });
+    if (res.ok) setPins(prev => prev.filter((pin: any) => pin.id !== id));
+  };
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#1a1614] flex items-center justify-center text-[#d4af37]">
@@ -290,6 +313,15 @@ const handleDeleteJournalEntry = async (id: string) => {
               <span className="hidden sm:inline">Bag of Loot</span>
               <span className="sm:hidden">Loot</span>
             </TabsTrigger>
+
+            <TabsTrigger
+              value="map"
+              className="flex-1 gap-2 font-display data-[state=active]:bg-gold data-[state=active]:text-background"
+            >
+            <Map className="w-4 h-4" />
+            <span className="hidden sm:inline">Middle-earth Map</span>
+            <span className="sm:hidden">Map</span>
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="journal">
@@ -341,6 +373,18 @@ const handleDeleteJournalEntry = async (id: string) => {
               characters={characters}
             />
           </TabsContent>
+
+          <TabsContent value="map">
+            <MapView
+            pins={pins}
+            isDM={currentUser?.role === 'DM'}
+            currentUser={currentUser}
+            onAddPin={handleAddPin}
+            onDeletePin={handleDeletePin}
+          />
+        </TabsContent>
+
+
         </Tabs>
       </motion.div>
 
