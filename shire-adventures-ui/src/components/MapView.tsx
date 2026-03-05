@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect } from "react";
-import { MapPin, X } from "lucide-react";
+import { useState, useRef } from "react";
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+import { MapPin, X, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
 
 interface Pin {
   id: string;
@@ -51,9 +52,9 @@ export const MapView = ({ pins, isDM, currentUser, onAddPin, onDeletePin }: MapV
 
   return (
     <div className="flex flex-col gap-4">
-      {/* DM Controls */}
-      {isDM && (
-        <div className="flex items-center gap-3">
+      {/* Controls Row */}
+      <div className="flex items-center justify-between">
+        {isDM && (
           <button
             onClick={() => { setPlacingPin(!placingPin); setNewPinPos(null); }}
             className={`flex items-center gap-2 px-4 py-2 rounded font-display text-sm transition-colors ${
@@ -65,49 +66,87 @@ export const MapView = ({ pins, isDM, currentUser, onAddPin, onDeletePin }: MapV
             <MapPin className="w-4 h-4" />
             {placingPin ? "Click map to place pin..." : "Place Pin"}
           </button>
-          {placingPin && (
-            <span className="text-gold/50 text-xs italic">Click anywhere on the map</span>
-          )}
-        </div>
-      )}
+        )}
+        {placingPin && (
+          <span className="text-gold/50 text-xs italic">Click anywhere on the map</span>
+        )}
+      </div>
 
       {/* Map Container */}
-      <div
-        ref={mapRef}
-        onClick={handleMapClick}
-        className={`relative w-full rounded-lg overflow-hidden border border-gold/20 shadow-xl ${
-          placingPin ? "cursor-crosshair" : "cursor-default"
-        }`}
-        style={{ paddingBottom: "56.25%" }}
-      >
-        <img
-          src="/middle-earth-map.jpeg"
-          alt="Map of Middle-earth"
-          className="absolute inset-0 w-full h-full object-cover"
-          draggable={false}
-        />
+      <div className="relative w-full rounded-lg overflow-hidden border border-gold/20 shadow-xl bg-black">
+        <TransformWrapper
+          initialScale={1}
+          minScale={0.5}
+          maxScale={5}
+          disabled={placingPin}
+        >
+          {({ zoomIn, zoomOut, resetTransform }) => (
+            <>
+              {/* Zoom Controls */}
+              <div className="absolute top-3 right-3 z-20 flex flex-col gap-2">
+                <button
+                  onClick={() => zoomIn()}
+                  className="bg-background/80 border border-gold/30 text-gold p-2 rounded hover:bg-gold/10 transition-colors"
+                >
+                  <ZoomIn className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => zoomOut()}
+                  className="bg-background/80 border border-gold/30 text-gold p-2 rounded hover:bg-gold/10 transition-colors"
+                >
+                  <ZoomOut className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => resetTransform()}
+                  className="bg-background/80 border border-gold/30 text-gold p-2 rounded hover:bg-gold/10 transition-colors"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                </button>
+              </div>
 
-        {/* Existing Pins */}
-        {pins.map(pin => (
-          <button
-            key={pin.id}
-            onClick={(e) => { e.stopPropagation(); setSelectedPin(pin); }}
-            className="absolute transform -translate-x-1/2 -translate-y-full group"
-            style={{ left: `${pin.x}%`, top: `${pin.y}%` }}
-          >
-            <MapPin className="w-6 h-6 text-gold drop-shadow-lg group-hover:scale-125 transition-transform" fill="#D4AF37" />
-          </button>
-        ))}
+              <TransformComponent
+                wrapperStyle={{ width: "100%", display: "block" }}
+                contentStyle={{ width: "100%", display: "block" }}
+              >
+                <div
+                  ref={mapRef}
+                  onClick={handleMapClick}
+                  className={`relative w-full ${placingPin ? "cursor-crosshair" : "cursor-grab active:cursor-grabbing"}`}
+                  style={{ paddingBottom: "56.25%" }}
+                >
+                  <img
+                    src="/middle-earth-map.jpeg"
+                    alt="Map of Middle-earth"
+                    className="absolute inset-0 w-full h-full object-cover"
+                    draggable={false}
+                  />
 
-        {/* New Pin Preview */}
-        {newPinPos && (
-          <div
-            className="absolute transform -translate-x-1/2 -translate-y-full"
-            style={{ left: `${newPinPos.x}%`, top: `${newPinPos.y}%` }}
-          >
-            <MapPin className="w-6 h-6 text-red-400 animate-bounce" fill="#f87171" />
-          </div>
-        )}
+                  {/* Existing Pins */}
+                  {pins.map(pin => (
+                    <button
+                      key={pin.id}
+                      onClick={(e) => { e.stopPropagation(); setSelectedPin(pin); }}
+                      className="absolute transform -translate-x-1/2 -translate-y-full group"
+                      style={{ left: `${pin.x}%`, top: `${pin.y}%` }}
+                    >
+                      <MapPin className="w-6 h-6 text-gold drop-shadow-lg group-hover:scale-125 transition-transform" fill="#D4AF37" />
+                    </button>
+                  ))}
+
+                  {/* New Pin Preview */}
+                  {newPinPos && (
+                    <div
+                      className="absolute transform -translate-x-1/2 -translate-y-full pointer-events-none"
+                      style={{ left: `${newPinPos.x}%`, top: `${newPinPos.y}%` }}
+                    >
+                      <MapPin className="w-6 h-6 text-red-400 animate-bounce" fill="#f87171" />
+                    </div>
+                  )}
+                </div>
+              </TransformComponent>
+            </>
+          )}
+        </TransformWrapper>
       </div>
 
       {/* New Pin Form */}

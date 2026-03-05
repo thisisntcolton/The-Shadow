@@ -56,7 +56,7 @@ const Index = () => {
         if (characterRes.ok) setCharacters(await characterRes.json());
         if (sessionRes.ok) {
           const sessionData = await sessionRes.json();
-          setNextSession(sessionData.nextSession);
+          setNextSession(sessionData.next_session || sessionData.nextSession);
         }
       } catch (error) {
         console.error("Failed to sync with the backend:", error);
