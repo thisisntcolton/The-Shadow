@@ -10,6 +10,7 @@ import { BookOpen, Scroll, Package, Sparkles } from "lucide-react";
 import { SessionCountdown } from "@/components/SessionCountdown";
 import { MapView } from "@/components/MapView";
 import { Map } from "lucide-react";
+import { StoryRecap } from "@/components/StoryRecap";
 
 import wizardImage from "@/assets/characters/gandalf-wizard.jpg";
 import hobbitImage from "@/assets/characters/hobbit-adventurer.jpg";
@@ -343,33 +344,43 @@ const handleDeleteJournalEntry = async (id: string) => {
           </TabsContent>
 
           <TabsContent value="recap">
-            {currentUser?.role === 'DM' && (
-              <div className="mb-8 p-6 border border-gold/30 bg-muted/10 rounded-lg shadow-inner">
-                <h3 className="text-gold mb-4 font-display italic">Record a New Chronicle</h3>
-                <form onSubmit={handlePostRecap} className="flex flex-col gap-4">
-                  <input
-                    name="title"
-                    placeholder="Session Title"
-                    required
-                    className="p-2 bg-background border border-gold/20 text-gold rounded outline-none focus:border-gold/50"
-                  />
-                  <textarea
-                    name="summary"
-                    placeholder="What happened in the Shire today?..."
-                    required
-                    className="p-2 bg-background border border-gold/20 text-gold rounded h-24 outline-none focus:border-gold/50"
-                  />
-                  <button
-                    type="submit"
-                    className="bg-gold text-background font-bold py-2 rounded hover:bg-gold/80 transition-colors"
-                  >
-                    Seal Entry in Archives
-                  </button>
-                </form>
-              </div>
-            )}
-            <DMRecap recaps={sessionRecaps} />
-          </TabsContent>
+  {currentUser?.role === 'DM' && (
+    <div className="flex justify-end mb-4">
+      <StoryRecap
+        journalEntries={journalEntries}
+        recaps={sessionRecaps}
+        characters={characters}
+        lootItems={lootItems}
+      />
+    </div>
+  )}
+  {currentUser?.role === 'DM' && (
+    <div className="mb-8 p-6 border border-gold/30 bg-muted/10 rounded-lg shadow-inner">
+      <h3 className="text-gold mb-4 font-display italic">Record a New Chronicle</h3>
+      <form onSubmit={handlePostRecap} className="flex flex-col gap-4">
+        <input
+          name="title"
+          placeholder="Session Title"
+          required
+          className="p-2 bg-background border border-gold/20 text-gold rounded outline-none focus:border-gold/50"
+        />
+        <textarea
+          name="summary"
+          placeholder="What happened in the Shire today?..."
+          required
+          className="p-2 bg-background border border-gold/20 text-gold rounded h-24 outline-none focus:border-gold/50"
+        />
+        <button
+          type="submit"
+          className="bg-gold text-background font-bold py-2 rounded hover:bg-gold/80 transition-colors"
+        >
+          Seal Entry in Archives
+        </button>
+      </form>
+    </div>
+  )}
+  <DMRecap recaps={sessionRecaps} />
+</TabsContent>
 
           <TabsContent value="loot">
             <BagOfLoot
