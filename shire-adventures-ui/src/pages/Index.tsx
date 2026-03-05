@@ -39,7 +39,7 @@ const Index = () => {
     const fetchCampaignData = async () => {
       try {
         setIsLoading(true);
-        const [lootRes, journalRes, recapRes, userRes, characterRes, sessionRes] = await Promise.all([
+        const [lootRes, journalRes, recapRes, userRes, characterRes, sessionRes, pinsRes] = await Promise.all([
           fetch("https://the-shadow-backend.vercel.app/api/loot"),
           fetch("https://the-shadow-backend.vercel.app/api/journal"),
           fetch("https://the-shadow-backend.vercel.app/api/recap"),
@@ -58,6 +58,7 @@ const Index = () => {
           const sessionData = await sessionRes.json();
           setNextSession(sessionData.next_session || sessionData.nextSession);
         }
+        if (pinsRes.ok) setPins(await pinsRes.json());
       } catch (error) {
         console.error("Failed to sync with the backend:", error);
       } finally {
@@ -262,7 +263,15 @@ const handleDeleteJournalEntry = async (id: string) => {
             <PlayerAvatar
               key={character.name}
               character={{ ...character, image: imageMap[character.image] || character.image }}
-              onClick={() => setSelectedCharacter(character)}
+              onClick={() => setSelectedCharacter({
+                ...character,
+                image: imageMap[character.image] || character.image,
+                hitPoints: {
+                  current: character.hit_points_current,
+                  max: character.hit_points_max
+                },
+                armorClass: character.armor_class,
+              })}
               delay={0.3 + index * 0.1}
             />
           ))}
@@ -276,7 +285,7 @@ const handleDeleteJournalEntry = async (id: string) => {
             character={{ ...selectedCharacter, image: imageMap[selectedCharacter.image] || selectedCharacter.image }}
             isOpen={!!selectedCharacter}
             onClose={() => setSelectedCharacter(null)}
-            assignedLoot={lootItems.filter((item: any) => item.assignedTo === selectedCharacter.name)}
+            assignedLoot={lootItems.filter((item: any) => item.assigned_to === selectedCharacter.name)}
           />
         )}
       </AnimatePresence>
