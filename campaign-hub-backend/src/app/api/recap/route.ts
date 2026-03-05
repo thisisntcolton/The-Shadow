@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
+import { neon } from '@neondatabase/serverless';
 import { getCorsHeaders } from '@/lib/cors';
 
-const filePath = path.join(process.cwd(), 'data', 'recaps.json');
+const sql = neon(process.env.DATABASE_URL!);
 
 export async function OPTIONS(request: Request) {
   return new NextResponse(null, { status: 204, headers: getCorsHeaders(request) });
@@ -11,8 +10,8 @@ export async function OPTIONS(request: Request) {
 
 export async function GET(request: Request) {
   try {
-    const fileContent = await fs.readFile(filePath, 'utf8');
-    return NextResponse.json(JSON.parse(fileContent), { headers: getCorsHeaders(request) });
+    const recaps = await sql`SELECT * FROM recaps ORDER BY session ASC`;
+    return NextResponse.json(recaps, { headers: getCorsHeaders(request) });
   } catch (error) {
     return NextResponse.json({ error: "Recaps lost in Moria" }, { status: 500, headers: getCorsHeaders(request) });
   }
@@ -20,19 +19,14 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const newRecap = await request.json();
-    const fileContent = await fs.readFile(filePath, 'utf8');
-    const recaps = JSON.parse(fileContent);
-
-    const recapWithId = {
-      ...newRecap,
-      id: Date.now().toString(),
-    };
-
-    recaps.push(recapWithId);
-    await fs.writeFile(filePath, JSON.stringify(recaps, null, 2));
-
-    return NextResponse.json(recapWithId, { status: 201, headers: getCorsHeaders(request) });
+    const { title, summary, session } = await request.json();
+    const id = Date.now().toString();
+    const [recap] = await sql`
+      INSERT INTO recaps (id, title, summary, session)
+      VALUES (${id}, ${title}, ${summary}, ${session})
+      RETURNING *
+    `;
+    return NextResponse.json(recap, { status: 201, headers: getCorsHeaders(request) });
   } catch (error) {
     return NextResponse.json({ error: "Failed to save recap" }, { status: 500, headers: getCorsHeaders(request) });
   }
