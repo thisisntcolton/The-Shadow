@@ -6,7 +6,7 @@ import { CharacterSheet } from "@/components/CharacterSheet";
 import { PlayerJournal } from "@/components/PlayerJournal";
 import { DMRecap } from "@/components/DMRecap";
 import { BagOfLoot, LootItem } from "@/components/BagOfLoot";
-import { BookOpen, Scroll, Package, Sparkles } from "lucide-react";
+import { BookOpen, Scroll, Package, Sparkles, LogOut } from "lucide-react";
 import { SessionCountdown } from "@/components/SessionCountdown";
 import { MapView } from "@/components/MapView";
 import { Map } from "lucide-react";
@@ -24,9 +24,13 @@ const imageMap: Record<string, string> = {
   "dwarf-warrior.jpg": dwarfImage,
 };
 
-const Index = () => {
-  const [currentUser, setCurrentUser] = useState<any | null>(null);
-  const [allUsers, setAllUsers] = useState<any[]>([]);
+interface IndexProps {
+  currentUser: any;
+  token: string | null;
+  onLogout: () => void;
+}
+
+const Index = ({ currentUser, token, onLogout }: IndexProps) => {
   const [characters, setCharacters] = useState<any[]>([]);
   const [selectedCharacter, setSelectedCharacter] = useState<any | null>(null);
   const [lootItems, setLootItems] = useState<any[]>([]);
@@ -40,11 +44,10 @@ const Index = () => {
     const fetchCampaignData = async () => {
       try {
         setIsLoading(true);
-        const [lootRes, journalRes, recapRes, userRes, characterRes, sessionRes, pinsRes] = await Promise.all([
+        const [lootRes, journalRes, recapRes, characterRes, sessionRes, pinsRes] = await Promise.all([
           fetch("https://the-shadow-backend.vercel.app/api/loot"),
           fetch("https://the-shadow-backend.vercel.app/api/journal"),
           fetch("https://the-shadow-backend.vercel.app/api/recap"),
-          fetch("https://the-shadow-backend.vercel.app/api/users"),
           fetch("https://the-shadow-backend.vercel.app/api/characters"),
           fetch("https://the-shadow-backend.vercel.app/api/session"),
           fetch("https://the-shadow-backend.vercel.app/api/pins"),
@@ -53,7 +56,6 @@ const Index = () => {
         if (lootRes.ok) setLootItems(await lootRes.json());
         if (journalRes.ok) setJournalEntries(await journalRes.json());
         if (recapRes.ok) setSessionRecaps(await recapRes.json());
-        if (userRes.ok) setAllUsers(await userRes.json());
         if (characterRes.ok) setCharacters(await characterRes.json());
         if (sessionRes.ok) {
           const sessionData = await sessionRes.json();
@@ -133,29 +135,29 @@ const Index = () => {
   };
 
   const handleAddJournalEntry = async (newEntry: Omit<{ id: string; title: string; date: string; location: string; content: string; author: string; }, 'id'>) => {
-  const res = await fetch("https://the-shadow-backend.vercel.app/api/journal", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(newEntry)
-  });
+    const res = await fetch("https://the-shadow-backend.vercel.app/api/journal", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newEntry)
+    });
 
-  if (res.ok) {
-    const updated = await fetch("https://the-shadow-backend.vercel.app/api/journal").then(r => r.json());
-    setJournalEntries(updated);
-  }
-};
+    if (res.ok) {
+      const updated = await fetch("https://the-shadow-backend.vercel.app/api/journal").then(r => r.json());
+      setJournalEntries(updated);
+    }
+  };
 
-const handleDeleteJournalEntry = async (id: string) => {
-  const res = await fetch("https://the-shadow-backend.vercel.app/api/journal", {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id })
-  });
+  const handleDeleteJournalEntry = async (id: string) => {
+    const res = await fetch("https://the-shadow-backend.vercel.app/api/journal", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id })
+    });
 
-  if (res.ok) {
-    setJournalEntries(prev => prev.filter((entry: any) => entry.id !== id));
-  }
-};
+    if (res.ok) {
+      setJournalEntries(prev => prev.filter((entry: any) => entry.id !== id));
+    }
+  };
 
   const handleUpdateSession = async (newDateTime: string) => {
     const res = await fetch("https://the-shadow-backend.vercel.app/api/session", {
@@ -186,6 +188,7 @@ const handleDeleteJournalEntry = async (id: string) => {
     });
     if (res.ok) setPins(prev => prev.filter((pin: any) => pin.id !== id));
   };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#1a1614] flex items-center justify-center text-[#d4af37]">
@@ -198,7 +201,16 @@ const handleDeleteJournalEntry = async (id: string) => {
   }
 
   return (
-    <div className="min-h-screen p-4 md:p-8">
+    <div className="min-h-screen p-4 md:p-8 relative">
+      {/* Logout Button */}
+      <button
+        onClick={onLogout}
+        className="absolute right-4 top-4 flex items-center gap-1 text-gold/40 hover:text-gold text-xs font-display uppercase tracking-widest transition-colors"
+      >
+        <LogOut className="w-3 h-3" />
+        Leave the Shire
+      </button>
+
       {/* Header */}
       <motion.header
         initial={{ opacity: 0, y: -20 }}
@@ -215,42 +227,18 @@ const handleDeleteJournalEntry = async (id: string) => {
         <p className="text-muted-foreground font-body italic">
           A Chronicle of the Fellowship's Journey
         </p>
+        <p className="text-gold/40 text-xs font-display mt-1">
+          Welcome, {currentUser.name}
+        </p>
       </motion.header>
 
       {nextSession && (
         <SessionCountdown
-        nextSession={nextSession}
-        isDM={currentUser?.role === 'DM'}
-        onUpdateSession={handleUpdateSession}
-      />
-    )}
-
-      {/* User Selection */}
-      <div className="flex flex-col items-center justify-center mb-12 p-6 border-b border-gold/10 bg-muted/5">
-        <label className="text-gold/60 text-xs uppercase tracking-widest mb-2 font-display">
-          Identify Yourself
-        </label>
-        <select
-          className="bg-background border-2 border-gold/20 text-gold p-3 rounded-md font-display min-w-[250px] focus:border-gold/50 outline-none transition-all cursor-pointer shadow-lg hover:bg-muted/20"
-          onChange={(e) => {
-            const user = allUsers.find(u => u.name === e.target.value);
-            setCurrentUser(user);
-          }}
-        >
-          <option value="">— Who enters the Shire? —</option>
-          {allUsers.map(user => (
-            <option key={user.id} value={user.name} className="bg-background text-foreground">
-              {user.name} ({user.role})
-            </option>
-          ))}
-        </select>
-
-        {currentUser && (
-          <p className="mt-4 text-gold animate-in fade-in slide-in-from-top-2 font-serif italic">
-            Welcome back, <span className="font-bold not-italic">{currentUser.name}</span>.
-          </p>
-        )}
-      </div>
+          nextSession={nextSession}
+          isDM={currentUser?.role === 'DM'}
+          onUpdateSession={handleUpdateSession}
+        />
+      )}
 
       {/* Party Members */}
       <motion.section
@@ -323,64 +311,63 @@ const handleDeleteJournalEntry = async (id: string) => {
               <span className="hidden sm:inline">Bag of Loot</span>
               <span className="sm:hidden">Loot</span>
             </TabsTrigger>
-
             <TabsTrigger
               value="map"
               className="flex-1 gap-2 font-display data-[state=active]:bg-gold data-[state=active]:text-background"
             >
-            <Map className="w-4 h-4" />
-            <span className="hidden sm:inline">Middle-earth Map</span>
-            <span className="sm:hidden">Map</span>
+              <Map className="w-4 h-4" />
+              <span className="hidden sm:inline">Middle-earth Map</span>
+              <span className="sm:hidden">Map</span>
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="journal">
-                <PlayerJournal
-                entries={journalEntries}
-                currentUser={currentUser}
-                onAddEntry={handleAddJournalEntry}
-                onDeleteEntry={handleDeleteJournalEntry}
-              />
+            <PlayerJournal
+              entries={journalEntries}
+              currentUser={currentUser}
+              onAddEntry={handleAddJournalEntry}
+              onDeleteEntry={handleDeleteJournalEntry}
+            />
           </TabsContent>
 
           <TabsContent value="recap">
-  {currentUser?.role === 'DM' && (
-    <div className="flex justify-end mb-4">
-      <StoryRecap
-        journalEntries={journalEntries}
-        recaps={sessionRecaps}
-        characters={characters}
-        lootItems={lootItems}
-      />
-    </div>
-  )}
-  {currentUser?.role === 'DM' && (
-    <div className="mb-8 p-6 border border-gold/30 bg-muted/10 rounded-lg shadow-inner">
-      <h3 className="text-gold mb-4 font-display italic">Record a New Chronicle</h3>
-      <form onSubmit={handlePostRecap} className="flex flex-col gap-4">
-        <input
-          name="title"
-          placeholder="Session Title"
-          required
-          className="p-2 bg-background border border-gold/20 text-gold rounded outline-none focus:border-gold/50"
-        />
-        <textarea
-          name="summary"
-          placeholder="What happened in the Shire today?..."
-          required
-          className="p-2 bg-background border border-gold/20 text-gold rounded h-24 outline-none focus:border-gold/50"
-        />
-        <button
-          type="submit"
-          className="bg-gold text-background font-bold py-2 rounded hover:bg-gold/80 transition-colors"
-        >
-          Seal Entry in Archives
-        </button>
-      </form>
-    </div>
-  )}
-  <DMRecap recaps={sessionRecaps} />
-</TabsContent>
+            {currentUser?.role === 'DM' && (
+              <div className="flex justify-end mb-4">
+                <StoryRecap
+                  journalEntries={journalEntries}
+                  recaps={sessionRecaps}
+                  characters={characters}
+                  lootItems={lootItems}
+                />
+              </div>
+            )}
+            {currentUser?.role === 'DM' && (
+              <div className="mb-8 p-6 border border-gold/30 bg-muted/10 rounded-lg shadow-inner">
+                <h3 className="text-gold mb-4 font-display italic">Record a New Chronicle</h3>
+                <form onSubmit={handlePostRecap} className="flex flex-col gap-4">
+                  <input
+                    name="title"
+                    placeholder="Session Title"
+                    required
+                    className="p-2 bg-background border border-gold/20 text-gold rounded outline-none focus:border-gold/50"
+                  />
+                  <textarea
+                    name="summary"
+                    placeholder="What happened in the Shire today?..."
+                    required
+                    className="p-2 bg-background border border-gold/20 text-gold rounded h-24 outline-none focus:border-gold/50"
+                  />
+                  <button
+                    type="submit"
+                    className="bg-gold text-background font-bold py-2 rounded hover:bg-gold/80 transition-colors"
+                  >
+                    Seal Entry in Archives
+                  </button>
+                </form>
+              </div>
+            )}
+            <DMRecap recaps={sessionRecaps} />
+          </TabsContent>
 
           <TabsContent value="loot">
             <BagOfLoot
@@ -396,15 +383,13 @@ const handleDeleteJournalEntry = async (id: string) => {
 
           <TabsContent value="map">
             <MapView
-            pins={pins}
-            isDM={currentUser?.role === 'DM'}
-            currentUser={currentUser}
-            onAddPin={handleAddPin}
-            onDeletePin={handleDeletePin}
-          />
-        </TabsContent>
-
-
+              pins={pins}
+              isDM={currentUser?.role === 'DM'}
+              currentUser={currentUser}
+              onAddPin={handleAddPin}
+              onDeletePin={handleDeletePin}
+            />
+          </TabsContent>
         </Tabs>
       </motion.div>
 
