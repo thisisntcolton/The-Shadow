@@ -19,57 +19,22 @@ export function StoryRecap({ journalEntries, recaps, characters, lootItems }: St
     setIsOpen(true);
     setStory("");
 
-    const characterSummary = characters.map(c =>
-      `${c.name} (Level ${c.level} ${c.race} ${c.class}, assigned to ${c.assigned_to || c.assignedTo})`
-    ).join(", ");
-
-    const journalSummary = journalEntries.map(e =>
-      `[${e.author} - ${e.date} at ${e.location}]: ${e.content}`
-    ).join("\n\n");
-
-    const recapSummary = recaps.map(r =>
-      `[Session ${r.session} - ${r.title}]: ${r.summary}`
-    ).join("\n\n");
-
-    const lootSummary = lootItems.map(l =>
-      `${l.name} (${l.rarity} ${l.type})`
-    ).join(", ");
-
-    const prompt = `You are a master storyteller writing in the style of J.R.R. Tolkien. 
-Based on the following campaign notes, write a beautiful storybook-style chronicle of the Fellowship's journey. 
-Write it as if it were a chapter from a great fantasy novel — rich with atmosphere, character, and wonder.
-Keep it to 4-6 paragraphs.
-
-CHARACTERS: ${characterSummary}
-
-PLAYER JOURNAL ENTRIES:
-${journalSummary}
-
-DM RECAPS:
-${recapSummary}
-
-NOTABLE ITEMS FOUND: ${lootSummary}
-
-Write the chronicle now:`;
-
     try {
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
+      const response = await fetch("https://the-shadow-backend.vercel.app/api/chronicle", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": import.meta.env.VITE_ANTHROPIC_API_KEY,
-          "anthropic-version": "2023-06-01",
-          "anthropic-dangerous-direct-browser-access": "true",
         },
         body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1024,
-          messages: [{ role: "user", content: prompt }],
+          journalEntries,
+          recaps,
+          characters,
+          lootItems,
         }),
       });
 
       const data = await response.json();
-      const text = data.content?.[0]?.text || "The chronicle could not be written at this time.";
+      const text = data.story || "The chronicle could not be written at this time.";
       setStory(text);
     } catch (error) {
       setStory("The chronicle could not be written at this time. Please try again.");
