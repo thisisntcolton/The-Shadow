@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { OrnateCard } from "./OrnateCard";
-import { BookOpen, Calendar, MapPin, PenLine, Trash2 } from "lucide-react";
+import { BookOpen, Calendar, MapPin, PenLine, Trash2, Check, X } from "lucide-react";
 
 interface JournalEntry {
   id: string;
@@ -17,11 +17,13 @@ interface PlayerJournalProps {
   currentUser: any;
   onAddEntry: (entry: Omit<JournalEntry, 'id'>) => Promise<void>;
   onDeleteEntry: (id: string) => Promise<void>;
+  onEditEntry: (entry: JournalEntry) => Promise<void>;
 }
 
-export function PlayerJournal({ entries, currentUser, onAddEntry, onDeleteEntry }: PlayerJournalProps) {
+export function PlayerJournal({ entries, currentUser, onAddEntry, onDeleteEntry, onEditEntry }: PlayerJournalProps) {
   const [showForm, setShowForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [editingEntry, setEditingEntry] = useState<JournalEntry | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -38,6 +40,12 @@ export function PlayerJournal({ entries, currentUser, onAddEntry, onDeleteEntry 
 
     setIsSubmitting(false);
     setShowForm(false);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingEntry) return;
+    await onEditEntry(editingEntry);
+    setEditingEntry(null);
   };
 
   return (
@@ -129,38 +137,91 @@ export function PlayerJournal({ entries, currentUser, onAddEntry, onDeleteEntry 
           >
             <OrnateCard variant="parchment" className="p-5">
               <div className="pt-4 pb-2">
-                <div className="flex items-start justify-between">
-                  <h3 className="font-display text-xl text-leather mb-2">{entry.title}</h3>
-                  {/* Only show delete to the author */}
-                  {currentUser?.name === entry.author && (
-                    <button
-                      onClick={() => onDeleteEntry(entry.id)}
-                      className="text-leather/30 hover:text-red-400 transition-colors ml-2 shrink-0"
-                      title="Delete entry"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
+                {editingEntry?.id === entry.id ? (
+                  // Edit Mode
+                  <div className="flex flex-col gap-3">
+                    <input
+                      value={editingEntry.title}
+                      onChange={e => setEditingEntry({ ...editingEntry, title: e.target.value })}
+                      className="p-2 bg-background border border-gold/20 text-leather rounded outline-none focus:border-gold/50 font-display"
+                    />
+                    <div className="grid grid-cols-2 gap-3">
+                      <input
+                        value={editingEntry.date}
+                        onChange={e => setEditingEntry({ ...editingEntry, date: e.target.value })}
+                        className="p-2 bg-background border border-gold/20 text-leather rounded outline-none focus:border-gold/50 text-sm"
+                      />
+                      <input
+                        value={editingEntry.location}
+                        onChange={e => setEditingEntry({ ...editingEntry, location: e.target.value })}
+                        className="p-2 bg-background border border-gold/20 text-leather rounded outline-none focus:border-gold/50 text-sm"
+                      />
+                    </div>
+                    <textarea
+                      value={editingEntry.content}
+                      onChange={e => setEditingEntry({ ...editingEntry, content: e.target.value })}
+                      className="p-2 bg-background border border-gold/20 text-leather rounded outline-none focus:border-gold/50 h-28 font-body"
+                    />
+                    <div className="flex gap-2 justify-end">
+                      <button
+                        onClick={() => setEditingEntry(null)}
+                        className="flex items-center gap-1 px-3 py-1.5 border border-gold/20 text-leather rounded text-sm hover:bg-muted/20 transition-colors"
+                      >
+                        <X className="w-3 h-3" /> Cancel
+                      </button>
+                      <button
+                        onClick={handleSaveEdit}
+                        className="flex items-center gap-1 px-3 py-1.5 bg-gold text-background rounded text-sm font-bold hover:bg-gold/80 transition-colors"
+                      >
+                        <Check className="w-3 h-3" /> Save
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  // View Mode
+                  <>
+                    <div className="flex items-start justify-between">
+                      <h3 className="font-display text-xl text-leather mb-2">{entry.title}</h3>
+                      {currentUser?.name === entry.author && (
+                        <div className="flex gap-2 ml-2 shrink-0">
+                          <button
+                            onClick={() => setEditingEntry(entry)}
+                            className="text-leather/30 hover:text-gold transition-colors"
+                            title="Edit entry"
+                          >
+                            <PenLine className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => onDeleteEntry(entry.id)}
+                            className="text-leather/30 hover:text-red-400 transition-colors"
+                            title="Delete entry"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
 
-                <div className="flex gap-4 text-sm text-leather/60 mb-3">
-                  <span className="flex items-center gap-1">
-                    <Calendar className="w-3 h-3" />
-                    {entry.date}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <MapPin className="w-3 h-3" />
-                    {entry.location}
-                  </span>
-                </div>
+                    <div className="flex gap-4 text-sm text-leather/60 mb-3">
+                      <span className="flex items-center gap-1">
+                        <Calendar className="w-3 h-3" />
+                        {entry.date}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <MapPin className="w-3 h-3" />
+                        {entry.location}
+                      </span>
+                    </div>
 
-                <p className="font-body text-leather/90 leading-relaxed italic">
-                  "{entry.content}"
-                </p>
+                    <p className="font-body text-leather/90 leading-relaxed italic">
+                      "{entry.content}"
+                    </p>
 
-                <p className="text-right text-sm text-leather/50 mt-3 font-display">
-                  — {entry.author}
-                </p>
+                    <p className="text-right text-sm text-leather/50 mt-3 font-display">
+                      — {entry.author}
+                    </p>
+                  </>
+                )}
               </div>
             </OrnateCard>
           </motion.div>

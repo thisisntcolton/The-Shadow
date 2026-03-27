@@ -32,6 +32,20 @@ export async function POST(request: Request) {
   }
 }
 
+export async function PATCH(request: Request) {
+  try {
+    const { id, title, date, location, content } = await request.json();
+    await sql`
+      UPDATE journal
+      SET title = ${title}, date = ${date}, location = ${location}, content = ${content}
+      WHERE id = ${id}
+    `;
+    return NextResponse.json({ success: true }, { headers: getCorsHeaders(request) });
+  } catch (error) {
+    return NextResponse.json({ error: "Failed to update entry" }, { status: 500, headers: getCorsHeaders(request) });
+  }
+}
+
 export async function DELETE(request: Request) {
   try {
     const { id } = await request.json();

@@ -159,6 +159,19 @@ const Index = ({ currentUser, token, onLogout }: IndexProps) => {
     }
   };
 
+  const handleEditJournalEntry = async (entry: any) => {
+    const res = await fetch("https://the-shadow-backend.vercel.app/api/journal", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(entry)
+    });
+    if (res.ok) {
+      setJournalEntries(prev =>
+        prev.map((e: any) => e.id === entry.id ? entry : e)
+      );
+    }
+  };
+
   const handleUpdateSession = async (newDateTime: string) => {
     const res = await fetch("https://the-shadow-backend.vercel.app/api/session", {
       method: "PATCH",
@@ -327,6 +340,7 @@ const Index = ({ currentUser, token, onLogout }: IndexProps) => {
               currentUser={currentUser}
               onAddEntry={handleAddJournalEntry}
               onDeleteEntry={handleDeleteJournalEntry}
+              onEditEntry={handleEditJournalEntry}
             />
           </TabsContent>
 
