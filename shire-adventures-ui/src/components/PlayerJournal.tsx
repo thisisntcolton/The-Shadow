@@ -143,35 +143,35 @@ export function PlayerJournal({ entries, currentUser, onAddEntry, onDeleteEntry,
                     <input
                       value={editingEntry.title}
                       onChange={e => setEditingEntry({ ...editingEntry, title: e.target.value })}
-                      className="p-2 bg-background border border-gold/20 text-leather rounded outline-none focus:border-gold/50 font-display"
+                      className="p-2 bg-leather/10 border border-leather/30 text-leather rounded outline-none focus:border-leather/60 font-display w-full"
                     />
                     <div className="grid grid-cols-2 gap-3">
                       <input
                         value={editingEntry.date}
                         onChange={e => setEditingEntry({ ...editingEntry, date: e.target.value })}
-                        className="p-2 bg-background border border-gold/20 text-leather rounded outline-none focus:border-gold/50 text-sm"
+                        className="p-2 bg-leather/10 border border-leather/30 text-leather/80 rounded outline-none focus:border-leather/60 text-sm"
                       />
                       <input
                         value={editingEntry.location}
                         onChange={e => setEditingEntry({ ...editingEntry, location: e.target.value })}
-                        className="p-2 bg-background border border-gold/20 text-leather rounded outline-none focus:border-gold/50 text-sm"
+                        className="p-2 bg-leather/10 border border-leather/30 text-leather/80 rounded outline-none focus:border-leather/60 text-sm"
                       />
                     </div>
                     <textarea
                       value={editingEntry.content}
                       onChange={e => setEditingEntry({ ...editingEntry, content: e.target.value })}
-                      className="p-2 bg-background border border-gold/20 text-leather rounded outline-none focus:border-gold/50 h-28 font-body"
+                      className="p-2 bg-leather/10 border border-leather/30 text-leather/90 rounded outline-none focus:border-leather/60 h-28 font-body italic resize-none w-full"
                     />
                     <div className="flex gap-2 justify-end">
                       <button
                         onClick={() => setEditingEntry(null)}
-                        className="flex items-center gap-1 px-3 py-1.5 border border-gold/20 text-leather rounded text-sm hover:bg-muted/20 transition-colors"
+                        className="flex items-center gap-1 px-3 py-1.5 border border-leather/30 text-leather/60 rounded text-sm hover:bg-leather/10 transition-colors"
                       >
                         <X className="w-3 h-3" /> Cancel
                       </button>
                       <button
                         onClick={handleSaveEdit}
-                        className="flex items-center gap-1 px-3 py-1.5 bg-gold text-background rounded text-sm font-bold hover:bg-gold/80 transition-colors"
+                        className="flex items-center gap-1 px-3 py-1.5 bg-leather text-background rounded text-sm font-bold hover:bg-leather/80 transition-colors"
                       >
                         <Check className="w-3 h-3" /> Save
                       </button>
